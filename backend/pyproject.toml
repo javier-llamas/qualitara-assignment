@@ -1,0 +1,95 @@
+[project]
+name = "fleet-telemetry-backend"
+version = "0.1.0"
+description = "Fleet telemetry monitoring service"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "sqlalchemy[asyncio]>=2.0.36",
+    "asyncpg>=0.30",
+    "alembic>=1.14",
+    "redis>=5.2",
+    "pydantic>=2.10",
+    "pydantic-settings>=2.7",
+    "python-dotenv>=1.0",
+    "httpx>=0.28",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.25",
+    "pytest-cov>=6.0",
+    "testcontainers[postgres,redis]>=4.9",
+    "httpx-sse>=0.4",
+    "mypy>=1.13",
+    "ruff>=0.8",
+    "psycopg[binary]>=3.2",
+]
+
+[tool.isort]
+profile = "black"
+
+[tool.black]
+line-length = 88
+target-version = ['py312']
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+exclude = [
+    "ml/*",
+    "engine/*",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/.venv/*",
+    "trading/bots/example_main.py",
+    "trading/bots/model*_V*.py",
+    "trading/services/brokers/streaming.py",
+    "*.pyx",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",        # pycodestyle errors
+    "F",        # pyflakes
+    "C90",      # mccabe complexity
+    "PLC0415",  # import-outside-top-level (detects imports inside functions/classes)
+    "PLR0912",  # too-many-branches
+    "PLR0913",  # too-many-arguments
+    "PLR0915",  # too-many-statements
+]
+ignore = [
+    "E501",   # line too long (let Black handle line length)
+    "E203",   # whitespace before ':' (conflicts with Black)
+]
+
+[tool.mypy]
+python_version = "3.12"
+disallow_untyped_defs = true
+warn_unused_ignores = true
+warn_return_any = true
+strict_equality = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["testcontainers.*", "httpx_sse.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+addopts = "-ra -q"
+
+[tool.coverage.run]
+source = ["app"]
+omit = ["app/main.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+]
