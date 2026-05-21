@@ -1,0 +1,1 @@
+If I have a fast_api backend and I'm asked to create a dashboard with react and typescript that is supposed to update "automatically" information in a postgres database; what other information should we know in order to be able to decide between polling the API and websockets?? How hard is to implement this. Are there performance considerations?
