@@ -1,6 +1,6 @@
 # Fleet Telemetry Monitoring Service
 
-Vertical-slice implementation of the assignment in `ai-log/db-design-main-prompt.md`. Architecture decisions are locked in `arch/ADR-001-realtime-dashboard-architecture.md` and `arch/ADR-002-database-and-concurrency.md`. Implementation plan in `.claude/plans/fleet-telemetry-implementation-plan.md`.
+Vertical-slice implementation of the assignment in `ai-log/db-design-main-prompt.md`. Start with the one-page summary ADR — [`ADR.md`](ADR.md) — which answers the four required ADR questions and embeds both architecture diagrams. The full reasoning is split across two detailed records: [ADR-001-realtime-dashboard-architecture.md](arch/ADR-001-realtime-dashboard-architecture.md) and [`ADR-002-database-and-concurrency.md`](arch/ADR-002-database-and-concurrency.md). Implementation plan in [fleet-telemetry-implementation-plan.md](.claude/plans/fleet-telemetry-implementation-plan.md).
 
 ## Quick start
 
