@@ -9,19 +9,19 @@ fmt:
 	cd frontend && npx prettier --write "src/**/*.{ts,tsx}" 2>/dev/null || true
 
 lint:
-	cd backend && uv run ruff check
-	cd backend && uv run ruff format --check
-	cd frontend && npm run lint || true
+	cd backend && uv run ruff check --fix
+	cd backend && uv run ruff format
+	cd frontend && npm run lint -- --fix || true
 
 type:
 	cd backend && uv run mypy app
 	cd frontend && npm run typecheck
 
+isort:
+	cd backend && uv run isort .
+
 # Aggregate gate — runs ruff + mypy. Wired into the Claude Code Stop hook.
-check:
-	cd backend && uv run ruff check
-	cd backend && uv run ruff format --check
-	cd backend && uv run mypy app
+check: lint type isort
 
 test-backend:
 	cd backend && uv run pytest

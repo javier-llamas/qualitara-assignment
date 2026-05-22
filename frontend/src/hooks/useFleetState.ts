@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { api, STREAM_URL } from "../api/client";
 import type {
   FleetState,
   IncidentOut,
+  IncidentType,
   StreamEvent,
   VehicleStatus,
   VehicleSummary,
@@ -36,8 +37,6 @@ function recomputeFleet(vehicles: Map<string, VehicleSummary>): FleetState {
 
 export function useFleetState() {
   const [state, setState] = useState<State>(empty);
-  const stateRef = useRef(state);
-  stateRef.current = state;
 
   const resync = useCallback(async () => {
     try {
@@ -59,6 +58,8 @@ export function useFleetState() {
   }, []);
 
   useEffect(() => {
+    // Fetch the REST baseline once on mount (and on reconnect via onError).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void resync();
   }, [resync]);
 
@@ -74,27 +75,40 @@ export function useFleetState() {
       const zoneCounts = new Map(s.zoneCounts);
 
       if (ev.type === "telemetry") {
+        const d = ev.data as {
+          status?: VehicleStatus;
+          battery_pct?: number;
+          speed_mps?: number;
+          lat?: number;
+          lon?: number;
+          timestamp?: string;
+        };
         const existing = vehicles.get(ev.vehicle_id);
         const next: VehicleSummary = {
           vehicle_id: ev.vehicle_id,
-          status: (ev.data.status as VehicleStatus) ?? existing?.status ?? "idle",
-          battery_pct: ev.data.battery_pct ?? existing?.battery_pct ?? 0,
-          speed_mps: ev.data.speed_mps ?? existing?.speed_mps ?? 0,
-          lat: ev.data.lat ?? existing?.lat ?? 0,
-          lon: ev.data.lon ?? existing?.lon ?? 0,
-          last_seen_at: ev.data.timestamp ?? ev.ts,
+          status: d.status ?? existing?.status ?? "idle",
+          battery_pct: d.battery_pct ?? existing?.battery_pct ?? 0,
+          speed_mps: d.speed_mps ?? existing?.speed_mps ?? 0,
+          lat: d.lat ?? existing?.lat ?? 0,
+          lon: d.lon ?? existing?.lon ?? 0,
+          last_seen_at: d.timestamp ?? ev.ts,
           latest_incident: existing?.latest_incident ?? null,
         };
         vehicles.set(ev.vehicle_id, next);
       } else if (ev.type === "incident") {
+        const d = ev.data as {
+          incident_id: number;
+          incident_type: IncidentType;
+          telemetry_id: number;
+        };
         const existing = vehicles.get(ev.vehicle_id);
         if (existing) {
           const incident: IncidentOut = {
-            id: ev.data.incident_id,
+            id: d.incident_id,
             vehicle_id: ev.vehicle_id,
-            incident_type: ev.data.incident_type,
+            incident_type: d.incident_type,
             timestamp: ev.ts,
-            telemetry_event_id: ev.data.telemetry_id,
+            telemetry_event_id: d.telemetry_id,
             details: {},
           };
           vehicles.set(ev.vehicle_id, { ...existing, latest_incident: incident });

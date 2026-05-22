@@ -43,6 +43,34 @@ export interface IncidentOut {
   details: Record<string, unknown>;
 }
 
+export type MissionStatus = "current" | "finished" | "canceled";
+
+export type MaintenanceStatus = "queued" | "ongoing" | "complete";
+
+export interface MissionOut {
+  id: number;
+  vehicle_id: string;
+  status: MissionStatus;
+  description: string | null;
+  started_at: string;
+  ended_at: string | null;
+}
+
+export interface MaintenanceOut {
+  id: number;
+  vehicle_id: string;
+  timestamp: string;
+  status: MaintenanceStatus;
+  diagnostics: string | null;
+  cancelled_mission_id: number | null;
+}
+
+export interface VehicleDetail {
+  vehicle_id: string;
+  current_mission: MissionOut | null;
+  maintenance_reports: MaintenanceOut[];
+}
+
 export interface VehicleSummary {
   vehicle_id: string;
   status: VehicleStatus;
@@ -73,6 +101,6 @@ export interface StreamEvent {
   v: number;
   type: StreamEventType;
   vehicle_id: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   ts: string;
 }

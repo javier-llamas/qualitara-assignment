@@ -6,9 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from .. import pubsub
 from ..db import get_session
 from ..models import VehicleStatus
-from ..schemas import StatusUpdate, VehicleSummary
+from ..schemas import StatusUpdate, VehicleDetail, VehicleSummary
 from ..services.faults import transition_to_fault
-from ..services.fleet import list_vehicles_with_latest
+from ..services.fleet import get_vehicle_detail, list_vehicles_with_latest
 
 router = APIRouter()
 
@@ -18,6 +18,14 @@ async def get_vehicles(
     session: AsyncSession = Depends(get_session),
 ) -> list[VehicleSummary]:
     return await list_vehicles_with_latest(session)
+
+
+@router.get("/{vehicle_id}/detail", response_model=VehicleDetail)
+async def get_detail(
+    vehicle_id: str,
+    session: AsyncSession = Depends(get_session),
+) -> VehicleDetail:
+    return await get_vehicle_detail(session, vehicle_id)
 
 
 @router.patch("/{vehicle_id}/status")

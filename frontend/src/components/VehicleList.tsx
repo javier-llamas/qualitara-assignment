@@ -20,7 +20,13 @@ function BatteryBar({ pct }: { pct: number }) {
   );
 }
 
-export function VehicleList({ vehicles }: { vehicles: VehicleSummary[] }) {
+export function VehicleList({
+  vehicles,
+  onSelect,
+}: {
+  vehicles: VehicleSummary[];
+  onSelect?: (vehicleId: string) => void;
+}) {
   return (
     <div className="bg-zinc-900 rounded-lg p-4">
       <h2 className="text-lg font-semibold mb-3">Vehicles ({vehicles.length})</h2>
@@ -37,7 +43,11 @@ export function VehicleList({ vehicles }: { vehicles: VehicleSummary[] }) {
           </thead>
           <tbody>
             {vehicles.map((v) => (
-              <tr key={v.vehicle_id} className="border-t border-zinc-800">
+              <tr
+                key={v.vehicle_id}
+                onClick={() => onSelect?.(v.vehicle_id)}
+                className="border-t border-zinc-800 cursor-pointer hover:bg-zinc-800/60"
+              >
                 <td className="py-2 font-mono">{v.vehicle_id}</td>
                 <td>
                   <span

@@ -102,6 +102,12 @@ class MissionOut(BaseModel):
     ended_at: datetime | None
 
 
+class VehicleDetail(BaseModel):
+    vehicle_id: str
+    current_mission: MissionOut | None = None
+    maintenance_reports: list[MaintenanceOut] = Field(default_factory=list)
+
+
 # SSE event payload
 StreamEventType = Literal["telemetry", "incident", "fault", "zone_entered"]
 

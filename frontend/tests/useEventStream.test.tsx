@@ -21,7 +21,7 @@ class MockEventSource {
 
 beforeEach(() => {
   MockEventSource.instances = [];
-  (global as any).EventSource = MockEventSource;
+  (global as { EventSource: unknown }).EventSource = MockEventSource;
 });
 
 describe("useEventStream", () => {
